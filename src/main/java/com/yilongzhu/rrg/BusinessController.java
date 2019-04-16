@@ -7,7 +7,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class BusinessController {
     @RequestMapping("/rrg")
-    public Business business() {
-        return Generate.generateBusiness();
+    public Business business(@RequestParam double latitude,
+                             @RequestParam double longitude,
+                             @RequestParam int radius) {
+        return Generate.generateBusiness(latitude, longitude, radius);
     }
 }

@@ -15,9 +15,11 @@ import java.lang.StringBuffer;
 import java.util.Random;
 
 public class Generate {
-    public static Business generateBusiness() {
+    private static String base = "https://api.yelp.com/v3/businesses/search?categories=restaurants&open_now=true";
+
+    public static Business generateBusiness(double latitude, double longitude, int radius) {
         try {
-            String json = getJsonFromYelp();
+            String json = getJsonFromYelp(latitude, longitude, radius);
             ObjectMapper mapper = new ObjectMapper();
             Search search = mapper.readValue(json, Search.class);
             // System.out.println(search.toString());
@@ -33,11 +35,11 @@ public class Generate {
         }
     }
 
-    private static String getJsonFromYelp() throws MalformedURLException, IOException  {
-        String apiURL = "https://api.yelp.com/v3/businesses/search?latitude=33.795867650000005&longitude=-84.32778960627682&radius=10000&categories=restaurants&open_now=true";
+    private static String getJsonFromYelp(double latitude, double longitude, int radius) throws MalformedURLException, IOException  {
+        String url = buildURL(latitude, longitude, radius);
         String apiKey = "";
         
-        URL yelpURL = new URL(apiURL);
+        URL yelpURL = new URL(url);
         HttpURLConnection yelpCon = (HttpURLConnection) yelpURL.openConnection();
         yelpCon.setRequestMethod("GET");
         yelpCon.setRequestProperty("Authorization", "Bearer " + apiKey);
@@ -55,5 +57,14 @@ public class Generate {
         yelpCon.disconnect();
 
         return json.toString();
+    }
+
+    private static String buildURL(double latitude, double longitude, int radius) {
+        StringBuffer sb = new StringBuffer(base);
+        sb.append("&latitude=").append(latitude)
+        .append("&longitude=").append(longitude)
+        .append("&radius=").append(radius);
+
+        return sb.toString();
     }
 }

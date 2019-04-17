@@ -12,37 +12,34 @@ import java.io.IOException;
 
 import java.lang.StringBuffer;
 
+import java.util.Map;
 import java.util.Random;
 
 public class Generate {
-    private static String base = "https://api.yelp.com/v3/businesses/search?categories=restaurants&open_now=true";
+    private static String base = "https://api.yelp.com/v3/businesses/search?categories=restaurants&open_now=true&limit=50";
+    private static String key = "";
 
-    public static Business generateBusiness(double latitude, double longitude, int radius) {
+    public static Business generateBusiness(Map<String, String> parameters) {
         try {
-            String json = getJsonFromYelp(latitude, longitude, radius);
+            String json = getJsonFromYelp(parameters);
             ObjectMapper mapper = new ObjectMapper();
             Search search = mapper.readValue(json, Search.class);
-            // System.out.println(search.toString());
-            // for (Business b : search.getBusinesses())
-            //     System.out.println(mapper.writeValueAsString(b));
-            
             Random rand = new Random();
 
-            return search.getBusinesses()[rand.nextInt(20)];
+            return search.getBusinesses()[rand.nextInt(Math.min(50, search.getTotal()))];
         } catch (Exception e) {
-            System.out.println("Exception: " + e.getMessage());
+            System.out.println("Exception in generateBusiness(): " + e.getMessage());
             return null;
         }
     }
 
-    private static String getJsonFromYelp(double latitude, double longitude, int radius) throws MalformedURLException, IOException  {
-        String url = buildURL(latitude, longitude, radius);
-        String apiKey = "";
+    private static String getJsonFromYelp(Map<String, String> parameters) throws MalformedURLException, IOException  {
+        String url = buildURL(parameters);
         
         URL yelpURL = new URL(url);
         HttpURLConnection yelpCon = (HttpURLConnection) yelpURL.openConnection();
         yelpCon.setRequestMethod("GET");
-        yelpCon.setRequestProperty("Authorization", "Bearer " + apiKey);
+        yelpCon.setRequestProperty("Authorization", "Bearer " + key);
         
         String line;
         StringBuffer json = new StringBuffer();
@@ -51,7 +48,7 @@ public class Generate {
                 json.append(line);
             }
         } catch (Exception e) {
-            System.out.println("Exception: " + e.getMessage());
+            System.out.println("Exception in getJsonFromYelp(): " + e.getMessage());
         }
 
         yelpCon.disconnect();
@@ -59,11 +56,14 @@ public class Generate {
         return json.toString();
     }
 
-    private static String buildURL(double latitude, double longitude, int radius) {
+    private static String buildURL(Map<String, String> parameters) {
         StringBuffer sb = new StringBuffer(base);
-        sb.append("&latitude=").append(latitude)
-        .append("&longitude=").append(longitude)
-        .append("&radius=").append(radius);
+        for (Map.Entry<String, String> entry : parameters.entrySet()) {
+            sb.append("&")
+            .append(entry.getKey())
+            .append("=")
+            .append(entry.getValue());
+        }
 
         return sb.toString();
     }

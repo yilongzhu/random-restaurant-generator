@@ -11,8 +11,9 @@ public class Business {
     private String name;
     private String imageURL;
     private double rating;
+    private int reviewCount;
     private String price;
-    private String[] address = new String[7];
+    private Object address;
 
     public String getId() {
         return this.id;
@@ -47,6 +48,15 @@ public class Business {
         this.rating = rating;
     }
 
+    @JsonProperty("review_count")
+    public int getReviewCount() {
+        return this.reviewCount;
+    }
+
+    public void setReviewCount(int reviewCount) {
+        this.reviewCount = reviewCount;
+    }
+
     public String getPrice() {
         return this.price;
     }
@@ -55,22 +65,16 @@ public class Business {
         this.price = price;
     }
 
-    public String[] getAddress() {
+    public Object getAddress() {
         return this.address;
     }
 
-    public void setAddress(String[] address) {
+    public void setAddress(Object address) {
         this.address = address;
     }
 
     @JsonProperty("location")
     private void unpackNested(Map<String,Object> location) {
-        address[0] = (String) location.get("address1");
-        address[1] = (String) location.get("address2");
-        address[2] = (String) location.get("address3");
-        address[3] = (String) location.get("city");
-        address[4] = (String) location.get("zip_code");
-        address[5] = (String) location.get("state");
-        address[6] = (String) location.get("country");
+        address = location.get("display_address");
     }
 }

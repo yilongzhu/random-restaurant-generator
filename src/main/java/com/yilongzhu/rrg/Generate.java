@@ -1,5 +1,6 @@
 package com.yilongzhu.rrg;
 
+import com.fasterxml.jackson.databind.InjectableValues;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.net.URL;
@@ -23,13 +24,18 @@ public class Generate {
         try {
             String json = getJsonFromYelp(parameters);
             ObjectMapper mapper = new ObjectMapper();
+            InjectableValues iv = new InjectableValues.Std().addValue(String.class, "OK");
+            mapper.setInjectableValues(iv);
             Search search = mapper.readValue(json, Search.class);
+
             Random rand = new Random();
 
             return search.getBusinesses()[rand.nextInt(Math.min(50, search.getTotal()))];
         } catch (Exception e) {
             System.out.println("Exception in generateBusiness(): " + e.getMessage());
-            return null;
+            Business err = new Business();
+            err.setStatus("ZERO_RESULTS");
+            return err;
         }
     }
 

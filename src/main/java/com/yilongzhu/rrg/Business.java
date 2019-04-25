@@ -1,5 +1,6 @@
 package com.yilongzhu.rrg;
 
+import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -7,6 +8,8 @@ import java.util.Map;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Business {
+    @JacksonInject
+    private String status;
     private String id;
     private String name;
     private String imageURL;
@@ -15,6 +18,17 @@ public class Business {
     private int reviewCount;
     private String price;
     private Object address;
+
+    public Business() {
+    }
+
+    public String getStatus() {
+        return this.status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
     public String getId() {
         return this.id;

@@ -10,6 +10,7 @@ public class Business {
     private String id;
     private String name;
     private String imageURL;
+    private String url;
     private double rating;
     private int reviewCount;
     private String price;
@@ -38,6 +39,14 @@ public class Business {
 
     public void setImageURL(String imageURL) {
         this.imageURL = imageURL;
+    }
+
+    public String getURL() {
+        return this.url;
+    }
+
+    public void setURL(String url) {
+        this.url = url;
     }
 
     public double getRating() {
